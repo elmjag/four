@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { get_index } from './gameLogic';
+
 
 function *counter() {
     let i = 0;
@@ -8,6 +8,10 @@ function *counter() {
     }
 }
 
+
+function get_index(x, y, height) {
+    return x * height + y;
+}
 
 
 function Board(props) {
@@ -60,11 +64,10 @@ function Game(props) {
     const cols = props.width;
     const rows = props.height;
     const board = props.board;
-    const winner = props.winner;
 
     return (
         <header className="App-header">
-            <p>{winner ? `winner is ${winner}` : "keep clicking"}</p>
+            <p>{props.state}</p>
             <div className="game">
                 <Board
                     cols={cols}
@@ -83,7 +86,7 @@ function mapStateToProps(state) {
         width: state.width,
         height: state.height,
         board: state.board,
-        winner: state.winner,
+        state: state.state,
     };
 }
 

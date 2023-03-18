@@ -1,5 +1,5 @@
-import { createStore } from 'redux';
-import { dropPos, getWinner } from './gameLogic';
+import { createStore, applyMiddleware } from 'redux';
+import { socket } from './socket.js';
 
 
 const WIDTH = 7;
@@ -10,34 +10,17 @@ const initialState = {
     width: WIDTH,
     height: HEIGHT,
     board: Array(WIDTH * HEIGHT).fill(null),
-    winner: null,
-    nextPlayer: "X",
+    state: "connecting",
 }
 
 
-function handleDropAction(state, pos) {
-    if (state.winner) {
-        /* game over */
-        return state;
-    }
-
-    const [x, y] = pos;
-
-    const newPos = dropPos(state.board, x, y, state.height);
-    if (newPos === null) {
-        /* occupied, can't drop here */
-        return state;
-    }
-
-    const newBoard = state.board.slice();
-    newBoard[newPos] = state.nextPlayer;
-
+function handleUpdateAction(state, data)
+{
     return {
         ...state,
-        board: newBoard,
-        nextPlayer: state.nextPlayer === "X" ? "O" : "X",
-        winner: getWinner(newBoard, state.width, state.height),
-    };
+        board: data.board,
+        state: data.state,
+    }
 }
 
 
@@ -45,13 +28,35 @@ function reducer(state=initialState, action) {
     // eslint-disable-next-line default-case
     switch (action.type)
     {
-        case 'drop':
-            return handleDropAction(state, action.payload);
+        case 'update':
+            return handleUpdateAction(state, action.payload);
     }
 
     return state;
 }
 
-const store = createStore(reducer);
+
+function socketioMiddleware({dispatch}) {
+    function handleDrop([x, y]) {
+        socket.emit("message", x, y);
+    }
+
+    socket.on("message", (data) => {
+        dispatch({type: "update", payload: data});
+    });
+
+    return next => action => {
+        if (action.type === "drop") {
+            handleDrop(action.payload);
+            return;
+        }
+
+        return next(action);
+    };
+}
+
+
+const store = createStore(reducer, initialState, applyMiddleware(...[socketioMiddleware]));
+
 
 export { store };
