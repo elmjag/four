@@ -11,6 +11,7 @@ const initialState = {
     height: HEIGHT,
     board: Array(WIDTH * HEIGHT).fill(null),
     state: "connecting",
+    color: null,
 }
 
 
@@ -20,6 +21,7 @@ function handleUpdateAction(state, data)
         ...state,
         board: data.board,
         state: data.state,
+        color: data.color,
     }
 }
 

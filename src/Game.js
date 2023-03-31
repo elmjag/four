@@ -61,18 +61,41 @@ function Board(props) {
 
 
 function Game(props) {
-    const cols = props.width;
-    const rows = props.height;
-    const board = props.board;
+    function message(state) {
+        switch (state) {
+            case "connecting":
+               return "connecting to server";
+            case "no_opponent":
+                return "waiting for an opponent to connect";
+            case "wait":
+                return "opponent's turn";
+            case "move":
+                return "your move";
+            case "won":
+                return "your are the winner";
+            case "lost":
+                return "you have lost";
+            default:
+                console.assert(false);
+        }
+    }
+
+    function our_color(color) {
+        if (color === null) {
+           return '';
+        }
+        return (<p>playing as {color}</p>);
+    }
 
     return (
         <header className="App-header">
-            <p>{props.state}</p>
+            {our_color(props.color)}
+            <p>{message(props.state)}</p>
             <div className="game">
                 <Board
-                    cols={cols}
-                    rows={rows}
-                    board={board}
+                    cols={props.width}
+                    rows={props.height}
+                    board={props.board}
                     onClick={(x,y) => props.drop(x, y)}
                 />
             </div>
@@ -87,6 +110,7 @@ function mapStateToProps(state) {
         height: state.height,
         board: state.board,
         state: state.state,
+        color: state.color,
     };
 }
 

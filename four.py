@@ -46,8 +46,11 @@ async def send_update(sid):
         return "O"
 
     def get_state():
+        if game.player_o is None:
+            return "no_opponent"
+
         if game.winner:
-            if game.winner == our_color():
+            if game.winner == color:
                 return "won"
             return "lost"
 
@@ -56,9 +59,12 @@ async def send_update(sid):
             return "move"
         return "wait"
 
+    color = our_color()
+
     payload = dict(
         board=game.board.squares,
         state=get_state(),
+        color=color,
     )
     await sio.send(data=payload, room=sid)
 
