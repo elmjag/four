@@ -30,6 +30,11 @@ function reducer(state=initialState, action) {
     // eslint-disable-next-line default-case
     switch (action.type)
     {
+        case 'server_busy':
+            return {
+                ...state,
+                state: "server_busy",
+            };
         case 'update':
             return handleUpdateAction(state, action.payload);
     }
@@ -44,6 +49,10 @@ function socketioMiddleware({dispatch}) {
     }
 
     socket.on("message", (data) => {
+        if (data === "server_busy") {
+            dispatch({type: "server_busy"});
+            return;
+        }
         dispatch({type: "update", payload: data});
     });
 

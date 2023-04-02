@@ -82,10 +82,14 @@ async def connect(sid, _):
         await send_update(game.player_x)
         return
 
-    assert game.player_o is None
-    game.player_o = sid
-    game.turn = game.player_x
-    await send_updates()
+    if game.player_o is None:
+        game.player_o = sid
+        game.turn = game.player_x
+        await send_updates()
+        return
+
+    # 'third' connection
+    await sio.send(data="server_busy", room=sid)
 
 
 @sio.event

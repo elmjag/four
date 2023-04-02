@@ -75,6 +75,8 @@ function Game(props) {
                 return "your are the winner";
             case "lost":
                 return "you have lost";
+            case "server_busy":
+                return "server busy, try later";
             default:
                 console.assert(false);
         }
