@@ -15,10 +15,13 @@ sio.attach(app)
 class Game:
     player_x = None
     player_o = None
-    board = Board()
+    board = None
 
     turn = None
     winner = None
+
+    def __init__(self):
+        self.board = Board()
 
     def _current_color(self):
         if self.player_x == self.turn:
@@ -36,7 +39,6 @@ class Game:
 
 
 game = Game()
-players = set()
 
 
 async def send_update(sid):
@@ -107,9 +109,36 @@ async def message(sid, x, y):
     await send_updates()
 
 
+async def restart_game(disconnected_sid):
+    global game
+
+    if game.player_x == disconnected_sid:
+        # player X disconnected
+        remaining_sid = game.player_o
+    elif game.player_o == disconnected_sid:
+        # player O disconnected
+        remaining_sid = game.player_x
+    else:
+        # third connection disconnected,
+        # we are done here
+        return
+
+    # reset game state
+    game = Game()
+
+    if remaining_sid is None:
+        # no player remain connected,
+        # we are done here
+        return
+
+    # 'reconnect' remaining player
+    await connect(remaining_sid, None)
+
+
 @sio.event
-def disconnect(sid):
+async def disconnect(sid):
     print("disconnect ", sid)
+    await restart_game(sid)
 
 
 async def index(request):
