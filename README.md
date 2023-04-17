@@ -11,7 +11,11 @@ Clone this repository and create conda environment with:
 
     micromamba create -f environment.yml
 
-This will install all required python packages and nodejs.
+This will install all required python packages and nodejs into `four` conda environment.
+Activate the `four` environment with.
+
+    micromamba activate four
+
 Install nodejs packages with:
 
     cd src
