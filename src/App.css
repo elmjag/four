@@ -62,3 +62,6 @@
   text-align: center;
   width: 34px;
 }
+.marked {
+    color: red;
+}

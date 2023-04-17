@@ -19,6 +19,7 @@ class Game:
 
     turn = None
     winner = None
+    winning_path = []
 
     def __init__(self):
         self.board = Board()
@@ -35,7 +36,7 @@ class Game:
             # toggle turn
             self.turn = self.player_x if color == "O" else self.player_o
             # check if some player have won
-            self.winner = self.board.get_winner()
+            self.winner, self.winning_path = self.board.get_winner()
 
 
 game = Game()
@@ -65,9 +66,11 @@ async def send_update(sid):
 
     payload = dict(
         board=game.board.squares,
+        marked_path = game.winning_path,
         state=get_state(),
         color=color,
     )
+
     await sio.send(data=payload, room=sid)
 
 

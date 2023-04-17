@@ -10,6 +10,7 @@ const initialState = {
     width: WIDTH,
     height: HEIGHT,
     board: Array(WIDTH * HEIGHT).fill(null),
+    marked_path: [],
     state: "connecting",
     color: null,
 }
@@ -20,6 +21,7 @@ function handleUpdateAction(state, data)
     return {
         ...state,
         board: data.board,
+        marked_path: data.marked_path,
         state: data.state,
         color: data.color,
     }

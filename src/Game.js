@@ -16,16 +16,23 @@ function get_index(x, y, height) {
 
 function Board(props) {
     function squares(cntr, row) {
+        function is_marked(idx) {
+            return props.marked_path.includes(idx);
+        }
+
         let content = [];
         for (let col = 0; col < props.cols; col += 1)
         {
+            const idx = get_index(col, row, props.rows);
+            const styles = "square" + (is_marked(idx) ? " marked" : "");
+
             content.push(
                 <button
                     key={cntr.next().value}
-                    className="square"
+                    className={styles}
                     onClick={() => props.onClick(col, row)}
                 >
-                    {props.board[get_index(col, row, props.rows)]}
+                    {props.board[idx]}
                 </button>
             );
         }
@@ -98,6 +105,7 @@ function Game(props) {
                     cols={props.width}
                     rows={props.height}
                     board={props.board}
+                    marked_path={props.marked_path}
                     onClick={(x,y) => props.drop(x, y)}
                 />
             </div>
@@ -111,6 +119,7 @@ function mapStateToProps(state) {
         width: state.width,
         height: state.height,
         board: state.board,
+        marked_path: state.marked_path,
         state: state.state,
         color: state.color,
     };

@@ -51,34 +51,36 @@ def _get_winner(board):
             yield get_path_indices(0, y, lambda x, y: (x + 1, y - 1))
 
     def check_winner(path):
-        player_x = 0
-        player_o = 0
+        player_x = []
+        player_o = []
 
         for idx in path:
             match board[idx]:
                 case "X":
-                    player_x += 1
-                    player_o = 0
+                    player_x.append(idx)
+                    player_o = []
                 case "O":
-                    player_x = 0
-                    player_o += 1
+                    player_x = []
+                    player_o.append(idx)
                 case None:
-                    player_x = 0
-                    player_o = 0
+                    player_x = []
+                    player_o = []
 
-            if player_x >= 4:
-                return "X"
+            if len(player_x) >= 4:
+                return "X", player_x
 
-            if player_o >= 4:
-                return "O"
+            if len(player_o) >= 4:
+                return "O", player_o
+
+        return None, None
 
     for path in get_paths():
-        winner = check_winner(path)
+        winner, path = check_winner(path)
         if winner is not None:
-            return winner
+            return winner, path
 
     # there are no winners
-    return None
+    return None, []
 
 
 class Board:
